@@ -5,7 +5,6 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
-#include "TPSPlayerAnimInstance.h"
 #include "Components/ArrowComponent.h"
 
 #include "Components/InputComponent.h"
@@ -50,9 +49,11 @@ ATPSPlayer::ATPSPlayer()
 
 	// Find BP_Bullet
 	static ConstructorHelpers::FClassFinder<AActor> BP_BULLET
-		(TEXT("/Game/TPSPractice/Blueprints/BP_Bullet.BP_Bullet_C"));
+		(TEXT("/Game/TPSPractice/Blueprints/Bullet/BP_Bullet.BP_Bullet_C"));
 	if (BP_BULLET.Succeeded())
 		BulletClass = BP_BULLET.Class;
+	else
+		UE_LOG(LogTemp, Error, TEXT("BP_Bullet is not found"));
 }
 
 // Called when the game starts or when spawned
@@ -127,15 +128,6 @@ void ATPSPlayer::Look(const FInputActionValue& Value)
 
 	this->AddControllerPitchInput(Movement.Y);
 	this->AddControllerYawInput(Movement.X);
-
-	auto Pitch = GetControlRotation().Pitch;
-	if (Pitch > 180)
-		Pitch -= 360;
-	Pitch = FMath::GetMappedRangeValueClamped(FVector2D(-45, 45), FVector2D(1, 0), Pitch);
-
-	auto AnimInstance = Cast<UTPSPlayerAnimInstance>(GetMesh()->GetAnimInstance());
-	if (AnimInstance)
-		AnimInstance->Pitch = Pitch;
 }
 
 void ATPSPlayer::JumpStart(const FInputActionValue& Value)
@@ -150,13 +142,13 @@ void ATPSPlayer::JumpEnd(const FInputActionValue& Value)
 
 void ATPSPlayer::Shoot(const FInputActionValue& Value)
 {
-	if (!ShootArrowComponent)
+	if (!ensure(ShootArrowComponent))
 	{
 		UE_LOG(LogTemp, Error, TEXT("ShootArrowComponent is not set"));
 		return;
 	}
 
-	if (!BulletClass)
+	if (!ensure(BulletClass))
 	{
 		UE_LOG(LogTemp, Error, TEXT("BulletClass is not set"));
 		return;

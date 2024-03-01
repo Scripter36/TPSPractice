@@ -46,18 +46,22 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Input)
 	class UArrowComponent* ShootArrowComponent;
-	
+
 	UPROPERTY(VisibleAnywhere, Category = Input)
-	TSubclassOf<AActor> BulletClass;
+	class TSubclassOf<AActor> BulletClass;
 
 	UFUNCTION()
 	void Move(const FInputActionValue& Value);
+
 	UFUNCTION()
 	void Look(const FInputActionValue& Value);
+
 	UFUNCTION()
 	void JumpStart(const FInputActionValue& Value);
+
 	UFUNCTION()
 	void JumpEnd(const FInputActionValue& Value);
+
 	UFUNCTION()
 	void Shoot(const FInputActionValue& Value);
 };
